@@ -1,11 +1,9 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * Created by drew on 1/24/14.
@@ -13,22 +11,15 @@ import java.util.HashMap;
 
 
 public class HTTPServer {
-    private static ArrayList<String> mHeader = new ArrayList<String>();
-    private HashMap<String,String> mRedirectMap = new HashMap<String,String>();
-    public static void main(String[] args) {
+    public ArrayList<String> mHeader = new ArrayList<String>();
+    public HashMap<String,String> mRedirectMap = new HashMap<String,String>();
 
-        if (args.length != 1) {
-            System.out.println("Invalid options.  Please specify the port number you wish to connect with using \'--port=####\'");
-        }
-
-
-        //get port number
-        int portNumber = getPortNumber(args[1]);
+    public HTTPServer(int portNum) {
         ServerSocket myHTTPServerSocket = null;
 
         //create new server socket
         try {
-            myHTTPServerSocket = new ServerSocket(portNumber);
+            myHTTPServerSocket = new ServerSocket(portNum);
         } catch (IOException e) {
             System.out.println("Could not create socket. Please specify a port number using the format \'--port=###\'");
             e.printStackTrace();
@@ -74,6 +65,18 @@ public class HTTPServer {
         }
     }
 
+    public static void main(String[] args) {
+
+        if (args.length != 1) {
+            System.out.println("Invalid options.  Please specify the port number you wish to connect with using \'--port=####\'");
+        }
+
+
+        //get port number
+        int portNumber = getPortNumber(args[1]);
+        HTTPServer server = new HTTPServer(portNumber);
+    }
+
     //this parses the port number from the options entered
     public static int getPortNumber(String port){
         int myPort = 0;
@@ -85,24 +88,45 @@ public class HTTPServer {
     }
 
     // Parses input and returns some string...
-    private static String parseInput(String input){
+    private String parseInput(String input){
         //do parsing
         return null;
     }
 
     // returns either GET or HEAD or POST
-    private static String getRequest(){
+    private String getRequest(){
         return null;
 
     }
+
     // returns true if directory has file
-    private static boolean hasFile(){
+    private boolean hasFile(){
         return false;
     }
 
     // reads redirect into hashmap for fast lookup
-    private static void readRedirect(){
+    // read file and parse lines into hashtable
+    // format: /file http://www.url.to.redirect.com
+    private void readRedirect(String input){
+        File file = new File("www/redirect.defs");
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
+        while(scanner.hasNextLine()){
+            String line = scanner.nextLine();
+            String[] words = line.split(" ");
+            mRedirectMap.put(words[0],words[1]); // put /file as key and http://.... as value
+        }
+    }
+    private String getContentType(String input){
+        return null;
+    }
+    private File streamFile(){
+        return null;
     }
 
 
