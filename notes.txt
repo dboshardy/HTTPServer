@@ -1,0 +1,7 @@
+Drew: Parse input
+Trevor: Output the output
+
+TO DO:
+Index directory?
+Ask about flexibility
+
