@@ -4,19 +4,17 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-/*import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by drew on 1/24/14.
  */
-//adding comment
+
+
 public class HTTPServer {
+    private static ArrayList<String> mHeader = new ArrayList<String>();
+    private HashMap<String,String> mRedirectMap = new HashMap<String,String>();
     public static void main(String[] args) {
 
         if (args.length != 1) {
@@ -67,12 +65,11 @@ public class HTTPServer {
         String inputFromClient = null;
         try {
             while((inputFromClient = input.readLine()) != null){
-                output.println(inputFromClient);
-                System.out.println("Received: \""+inputFromClient+"\" from "+myClientSocket.getInetAddress());
-                System.out.println("Echoing: \""+inputFromClient+"\"");
+                mHeader.add(inputFromClient);
+                parseInput(inputFromClient);
             }
         } catch (IOException e) {
-            System.out.println("Could not get input from client.");
+            System.out.println("Error."); //CHANGE ME
             e.printStackTrace();
         }
     }
@@ -86,4 +83,28 @@ public class HTTPServer {
         System.out.println(myPort);
         return myPort;
     }
+
+    // Parses input and returns some string...
+    private static String parseInput(String input){
+        //do parsing
+        return null;
+    }
+
+    // returns either GET or HEAD or POST
+    private static String getRequest(){
+        return null;
+
+    }
+    // returns true if directory has file
+    private static boolean hasFile(){
+        return false;
+    }
+
+    // reads redirect into hashmap for fast lookup
+    private static void readRedirect(){
+
+    }
+
+
+
 }
