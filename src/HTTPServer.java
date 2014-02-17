@@ -124,6 +124,13 @@ public class HTTPServer {
             Headers = mHeaders;
             parseRequest();
         }
+        //for future debugging
+        public String toString(){
+            System.out.println(mProtocol);
+            System.out.println(mFile);
+            System.out.println(mHost);
+            System.out.println(mURL);
+        }
 
         private void parseRequest() {
             String[] input = mHeaders.get(0).split(" ");
@@ -133,16 +140,16 @@ public class HTTPServer {
             mHost = mHeaders.get(1).replace("Host: ", "").trim();
             mURL = mHost + mFile;
             parseRequestType(request);
-
         }
 
-        private void parseRequestType(String request) {
+        private String parseRequestType(String request) {
 
             if (request.equals("GET")) {
                 mRequestType = "GET";
             } else if (request.equals("HEAD")) {
                 mRequestType = "HEAD";
             }
+            return mRequestType;
 
         }
 
