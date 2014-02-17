@@ -74,7 +74,7 @@ public class HTTPServer {
             while ((inputFromClient = input.readLine()) != null) {
                 mInputs.add(inputFromClient);
                 parseInput(inputFromClient);
-                Header headers = new Header(mInputs)
+                Header headers = new Header(mInputs);
             }
         } catch (IOException e) {
             System.out.println("Error."); //CHANGE ME
@@ -111,39 +111,38 @@ public class HTTPServer {
     }
 
 
+    // Header class to handle header manipulation and writing
     private class Header {
         private ArrayList<String> mHeaders = new ArrayList<String>();
         private String mProtocol;
         private String mFile;
         private String mHost;
         private String mURL;
+        private String mRequestType;
 
         private Header(ArrayList<String> Headers) {
             Headers = mHeaders;
             parseRequest();
         }
 
-
-        // returns either GET or HEAD
-        private String parseRequest() {
-
+        private void parseRequest() {
             String[] input = mHeaders.get(0).split(" ");
             String request = input[0]; // first word of first line of header is either GET or HEAD
             mFile = input[1];
             mProtocol = input[2];
             mHost = mHeaders.get(1).replace("Host: ", "").trim();
             mURL = mHost + mFile;
+            parseRequestType(request);
+
+        }
+
+        private void parseRequestType(String request) {
 
             if (request.equals("GET")) {
-                if (hasFile(mFile)) {
-                    return FILE_FOUND;
-                }
+                mRequestType = "GET";
             } else if (request.equals("HEAD")) {
-
-            } else {
-                return FILE_NOT_FOUND;
+                mRequestType = "HEAD";
             }
-            return null;
 
         }
 
