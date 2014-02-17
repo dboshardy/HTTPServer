@@ -7,12 +7,28 @@ import java.util.Scanner;
 
 /**
  * Created by drew on 1/24/14.
+ * <p/>
+ * pseudocode:
+ * <p/>
+ * receive input
+ * put input into arraylist to parse
+ * parse type of request
+ * if get
+ * check for file
+ * if found, return file found and file
+ * if not found, return 404
+ * if redirect return redirect
+ * if head return headers only
  */
 
 
 public class HTTPServer {
-    public ArrayList<String> mHeader = new ArrayList<String>();
-    public HashMap<String,String> mRedirectMap = new HashMap<String,String>();
+    public ArrayList<String> mInputs = new ArrayList<String>();
+    public HashMap<String, String> mRedirectMap = new HashMap<String, String>();
+    private final String FILE_NOT_FOUND = "404";
+    private final String FILE_FOUND = "200";
+    private final String REDIRECT = "300";
+    private String mResponse;
 
     public HTTPServer(int portNum) {
         ServerSocket myHTTPServerSocket = null;
@@ -37,7 +53,7 @@ public class HTTPServer {
         //create new output writer
         PrintWriter output = null;
         try {
-            output = new PrintWriter(myClientSocket.getOutputStream(),true);
+            output = new PrintWriter(myClientSocket.getOutputStream(), true);
         } catch (IOException e) {
             System.out.println("Could not connect to socket.");
             e.printStackTrace();
@@ -55,9 +71,10 @@ public class HTTPServer {
         //handle input from client socket
         String inputFromClient = null;
         try {
-            while((inputFromClient = input.readLine()) != null){
-                mHeader.add(inputFromClient);
+            while ((inputFromClient = input.readLine()) != null) {
+                mInputs.add(inputFromClient);
                 parseInput(inputFromClient);
+                Header headers = new Header(mInputs)
             }
         } catch (IOException e) {
             System.out.println("Error."); //CHANGE ME
@@ -78,57 +95,90 @@ public class HTTPServer {
     }
 
     //this parses the port number from the options entered
-    public static int getPortNumber(String port){
+    public static int getPortNumber(String port) {
         int myPort = 0;
-        if(port.contains("--port=")){
-            myPort= Integer.parseInt(port.replace("--port=",""));
+        if (port.contains("--port=")) {
+            myPort = Integer.parseInt(port.replace("--port=", ""));
         }
         System.out.println(myPort);
         return myPort;
     }
 
     // Parses input and returns some string...
-    private String parseInput(String input){
-        //do parsing
+    private String parseInput(String input) {
+
         return null;
     }
 
-    // returns either GET or HEAD or POST
-    private String getRequest(){
-        return null;
 
-    }
+    private class Header {
+        private ArrayList<String> mHeaders = new ArrayList<String>();
+        private String mProtocol;
+        private String mFile;
+        private String mHost;
+        private String mURL;
 
-    // returns true if directory has file
-    private boolean hasFile(){
-        return false;
-    }
-
-    // reads redirect into hashmap for fast lookup
-    // read file and parse lines into hashtable
-    // format: /file http://www.url.to.redirect.com
-    private void readRedirect(String input){
-        File file = new File("www/redirect.defs");
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        private Header(ArrayList<String> Headers) {
+            Headers = mHeaders;
+            parseRequest();
         }
 
-        while(scanner.hasNextLine()){
-            String line = scanner.nextLine();
-            String[] words = line.split(" ");
-            mRedirectMap.put(words[0],words[1]); // put /file as key and http://.... as value
+
+        // returns either GET or HEAD
+        private String parseRequest() {
+
+            String[] input = mHeaders.get(0).split(" ");
+            String request = input[0]; // first word of first line of header is either GET or HEAD
+            mFile = input[1];
+            mProtocol = input[2];
+            mHost = mHeaders.get(1).replace("Host: ", "").trim();
+            mURL = mHost + mFile;
+
+            if (request.equals("GET")) {
+                if (hasFile(mFile)) {
+                    return FILE_FOUND;
+                }
+            } else if (request.equals("HEAD")) {
+
+            } else {
+                return FILE_NOT_FOUND;
+            }
+            return null;
+
+        }
+
+        private String writeResponse() {
+            return null;
+        }
+
+        // returns true if directory has file
+        private boolean hasFile(String strFile) {
+            return false;
+        }
+
+        // reads redirect into hashmap for fast lookup
+        // read file and parse lines into hashtable
+        // format: /file http://www.url.to.redirect.com
+        private void readRedirect(String input) {
+            File file = new File("www/redirect.defs");
+            Scanner scanner = null;
+            try {
+                scanner = new Scanner(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] words = line.split(" ");
+                mRedirectMap.put(words[0], words[1]); // put /file as key and http://.... as value
+            }
+        }
+
+        private String getContentType(String input) {
+            return null;
         }
     }
-    private String getContentType(String input){
-        return null;
-    }
-    private File streamFile(){
-        return null;
-    }
-
 
 
 }
