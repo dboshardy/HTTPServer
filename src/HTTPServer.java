@@ -33,7 +33,7 @@ public class HTTPServer {
     public HTTPServer(int portNum) {
 
         // read file path
-        File dir = new File("/Users/yuentrevor/Documents/CSPP/Networks/www/"); //File("/home/$USER/54001/project1/www");
+        File dir = new File("/home/$USERNAME/54001/projec1/www"); //File("/home/$USER/54001/project1/www");
         // construct directory in field variable
         Collections.addAll(mDirectory,dir.listFiles());
         for(File file : mDirectory){
@@ -145,7 +145,5 @@ public class HTTPServer {
         }
         return output;
     }
-
-    // Header class to handle header manipulation and writing
 
 }
