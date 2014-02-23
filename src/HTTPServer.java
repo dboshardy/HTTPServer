@@ -11,9 +11,9 @@ import java.util.*;
  * <p/>
  * receive input
  * put input into arraylist to parse
- * parse type of request
+ * parse type of requesting
  * if get
- * check for file
+ *      check for file
  * if found, return file found and file
  * if not found, return 404
  * if redirect return redirect
@@ -28,6 +28,7 @@ public class HTTPServer {
     private final String REDIRECT = "300";
     private String mResponse;
     private ArrayList<File> mDirectory = new ArrayList<File>();
+    private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
 
     public HTTPServer(int portNum) {
 
@@ -35,6 +36,9 @@ public class HTTPServer {
         File dir = new File("/home/$USER/54001/project1/www");
         // construct directory in field variable
         Collections.addAll(mDirectory,dir.listFiles());
+        for(File file : mDirectory){
+            mDirectoryMap.put(file.getName(),file);
+        }
 
         ServerSocket myHTTPServerSocket = null;
 
@@ -97,7 +101,6 @@ public class HTTPServer {
         int portNumber = getPortNumber(args[1]);
         HTTPServer server = new HTTPServer(portNumber);
     }
-
     //this parses the port number from the options entered
     public static int getPortNumber(String port) {
         int myPort = 0;
@@ -122,6 +125,13 @@ public class HTTPServer {
             String[] words = line.split(" ");
             mRedirectMap.put(words[0], words[1]); // put /file as key and http://.... as value
         }
+    }
+    private boolean hasFile(String file){
+        boolean output = false;
+        if(mDirectoryMap.containsKey(file)){
+            output = true;
+        }
+        return output;
     }
 
     // Header class to handle header manipulation and writing

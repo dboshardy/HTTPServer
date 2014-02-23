@@ -62,7 +62,7 @@ public class Header {
     private String parseRequestType(String request) {
 
         if (request.equals("GET")) {
-            mRequestType = "GET";
+            mRequestType = "GEtT";
         } else if (request.equals("HEAD")) {
             mRequestType = "HEAD";
         }
@@ -70,22 +70,7 @@ public class Header {
 
     }
 
-    private String writeResponse() {
-        return null;
-    }
 
-    // returns true if directory has file
-    private boolean hasFile(String strFile) {
-        return false;
-    }
-
-    // reads redirect into hashmap for fast lookup
-    // read file and parse lines into hashtable
-    // format: /file http://www.url.to.redirect.com
-
-    private String getContentType(String input) {
-        return null;
-    }
 }
 
 
