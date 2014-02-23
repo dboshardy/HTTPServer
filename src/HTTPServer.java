@@ -33,8 +33,9 @@ public class HTTPServer {
     public HTTPServer(int portNum) {
 
         // read file path
-        File dir = new File("/home/$USERNAME/54001/projec1/www"); //File("/home/$USER/54001/project1/www");
+        File dir = new File("/home/drew/54001/project1/www/"); //File("/home/$USER/54001/project1/www");
         // construct directory in field variable
+        System.out.println(dir.listFiles());
         Collections.addAll(mDirectory,dir.listFiles());
         for(File file : mDirectory){
             mDirectoryMap.put(file.getName(),file);
@@ -60,9 +61,9 @@ public class HTTPServer {
         }
 
         //create new output writer
-        PrintWriter output = null;
+        OutputStreamWriter output = null;
         try {
-            output = new PrintWriter(myClientSocket.getOutputStream(), true);
+            output = new OutputStreamWriter(myClientSocket.getOutputStream());
         } catch (IOException e) {
             System.out.println("Could not connect to socket.");
             e.printStackTrace();
@@ -95,7 +96,14 @@ public class HTTPServer {
 
 		System.out.println("We are out of the loop");
 		Header header = new Header(mInputs,mDirectory,mDirectoryMap,mRedirectMap);
-		header.toString();
+        try {
+            output.write(header.writeResponse());
+            output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public static void main(String[] args) {

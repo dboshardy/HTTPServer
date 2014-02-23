@@ -111,7 +111,7 @@ public class Header {
 	}
 	
 	//write the response header and 
-	private String writeResponse() {
+	public String writeResponse() {
 		StringBuilder msg = new StringBuilder();
 		
 		//Status Line
