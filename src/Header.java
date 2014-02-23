@@ -88,7 +88,7 @@ public class Header {
 			System.out.println(line);	
 		}
         String request = input[0]; // first word of first line of header is either GET or HEAD
-        mFile = "/home/drew/54001/project1/www"+input[1];
+        mFile = input[1];
         mProtocol = input[2];
 		
         mHost = mHeaders.get(2).replace("Host: ", "").trim();
@@ -165,7 +165,7 @@ public class Header {
     // format: /file http://www.url.to.redirect.com
 	
 	private String writeContentLength() {
-		File f = new File(mFile);
+		File f = mDirMap.get(mFile);
 		return "Content-Length: "+f.length()+"\r\n";
 	}
 	
@@ -208,18 +208,6 @@ public class Header {
 		} else {
 			return "HTTP/1.0 500 Error\r\n";
 		}
-	}
-	
-	// send bytes of a file from file input stream to output stream
-	private void sendBytes(FileInputStream fis, OutputStream os) throws Exception {
-
-		byte[] buffer = new byte[1024];
-		int bytes = 0;
-
-		while ((bytes = fis.read(buffer)) != -1) {
-			os.write(buffer, 0, bytes);
-		}
-		return;
 	}
 
 }
