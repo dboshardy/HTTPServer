@@ -1,3 +1,4 @@
+import java.awt.image.DirectColorModel;
 import java.io.*;
 import java.util.ArrayList;
 import java.net.ServerSocket;
@@ -24,7 +25,20 @@ public class Header {
         mDirectory = directory;
         mDirMap = dirmap;
         mRedirectMap = redirmap;
+        System.out.println(mDirMap);
         parseRequest();
+    }
+
+    public HashMap<String, String> getRedirectMap() {
+        return mRedirectMap;
+    }
+
+    public HashMap<String, File> getDirMap() {
+        return mDirMap;
+    }
+
+    public ArrayList<File> getDirectory() {
+        return mDirectory;
     }
 
     public ArrayList<String> getHeaders() {
@@ -51,6 +65,7 @@ public class Header {
         return mRequestType;
     }
     private boolean hasFile(){
+        System.out.println("File name: "+mFile);
         boolean output = false;
         if(mDirMap.containsKey(mFile)){
             output = true;
@@ -73,7 +88,7 @@ public class Header {
 			System.out.println(line);	
 		}
         String request = input[0]; // first word of first line of header is either GET or HEAD
-        mFile = input[1];
+        mFile = "/home/drew/54001/project1/www"+input[1];
         mProtocol = input[2];
 		
         mHost = mHeaders.get(2).replace("Host: ", "").trim();

@@ -3,7 +3,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
-
 /**
  * Created by drew on 1/24/14.
  * <p/>
@@ -31,16 +30,12 @@ public class HTTPServer {
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
 
     public HTTPServer(int portNum) {
-
-        // read file path
         File dir = new File("/home/drew/54001/project1/www/"); //File("/home/$USER/54001/project1/www");
-        // construct directory in field variable
-        System.out.println(dir.listFiles());
-        Collections.addAll(mDirectory,dir.listFiles());
-        for(File file : mDirectory){
-            mDirectoryMap.put(file.getName(),file);
-        }
+        constructDirectory(dir,dir.getName());
+        initializeServer(portNum);
+    }
 
+    private void initializeServer(int portNum) {
         ServerSocket myHTTPServerSocket = null;
 
         //create new server socket
@@ -81,21 +76,19 @@ public class HTTPServer {
         //handle input from client socket
         String inputFromClient = null;
         try {
-			do {
-				inputFromClient = input.readLine();
-				System.out.println(inputFromClient);
-				mInputs.add(inputFromClient);
-				mInputs.removeAll(Collections.singleton(null));
-				System.out.println(mInputs);
-			} while (!inputFromClient.equals(""));
-			
+            do {
+                inputFromClient = input.readLine();
+                mInputs.add(inputFromClient);
+                mInputs.removeAll(Collections.singleton(null));
+            } while (!inputFromClient.equals(""));
+
         } catch (IOException e) {
             System.out.println("Error."); //CHANGE ME
             e.printStackTrace();
         }
 
-		System.out.println("We are out of the loop");
-		Header header = new Header(mInputs,mDirectory,mDirectoryMap,mRedirectMap);
+        System.out.println("We are out of the loop");
+        Header header = new Header(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
         try {
             output.write(header.writeResponse());
             output.flush();
@@ -104,6 +97,29 @@ public class HTTPServer {
         }
 
 
+    }
+
+    private void constructDirectory(File dir,String fileName) {
+
+        // construct directory in field variable
+        ArrayList<File> tempList = new ArrayList<File>();
+        Collections.addAll(tempList, dir.listFiles());
+        for (File file : tempList) {
+            if (file.isDirectory()) {
+                constructDirectory(file,fileName+"/");
+            } else {
+                String outputFileName = null;
+                try {
+                    outputFileName = new String(file.getCanonicalPath());
+                    outputFileName = outputFileName.substring(outputFileName.indexOf("www/")).replace("www/","/");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(outputFileName);
+                mDirectoryMap.put(outputFileName, file);
+            }
+        }
+        mDirectory.addAll(tempList);
     }
 
     public static void main(String[] args) {
