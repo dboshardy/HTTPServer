@@ -48,64 +48,66 @@ public class HTTPServer {
         }
 
         //create new client socket
-        Socket myClientSocket = null;
-        try {
-            myClientSocket = myHTTPServerSocket.accept();
-        } catch (IOException e) {
-            System.out.println("Could not connect to socket.");
-            e.printStackTrace();
-        }
-
-        //create new output writer
-        OutputStream output = null;
-        try {
-            output = myClientSocket.getOutputStream();
-        } catch (IOException e) {
-            System.out.println("Could not connect to socket.");
-            e.printStackTrace();
-        }
-
-        while(true){
-        //create new input reader
-        BufferedReader input = null;
-        try {
-            input = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
-        } catch (IOException e) {
-            System.out.println("Could not connect to socket.");
-            e.printStackTrace();
-        }
-
-        //handle input from client socket
-        String inputFromClient = null;
-        try {
-            do {
-                inputFromClient = input.readLine();
-                mInputs.add(inputFromClient);
-                mInputs.removeAll(Collections.singleton(null));
-            } while (!inputFromClient.equals(""));
-
-        } catch (IOException e) {
-            System.out.println("Error."); //CHANGE ME
-            e.printStackTrace();
-        }
-
-        System.out.println("We are out of the loop");
-        Header header = new Header(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
-        try {
-            String strHeader = header.writeResponse();
-            byte[] bHeaderByte = strHeader.getBytes();
-            output.write(bHeaderByte);
-            mFileToSend = header.getFileToSend();
-            if (!mFileToSend.equals(null)) {
-                byte[] bFileToSend = new byte[(int) mFileToSend.length()];
-                FileInputStream inputStream = new FileInputStream(mFileToSend);
-                inputStream.read(bFileToSend);
-                output.write(bFileToSend,0,bFileToSend.length);
+        while (true) {
+            Socket myClientSocket = null;
+            try {
+                myClientSocket = myHTTPServerSocket.accept();
+            } catch (IOException e) {
+                System.out.println("Could not connect to socket.");
+                e.printStackTrace();
             }
-            output.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+            //create new output writer
+            OutputStream output = null;
+            try {
+                output = myClientSocket.getOutputStream();
+            } catch (IOException e) {
+                System.out.println("Could not connect to socket.");
+                e.printStackTrace();
+            }
+
+            //create new input reader
+            BufferedReader input = null;
+            try {
+                input = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
+            } catch (IOException e) {
+                System.out.println("Could not connect to socket.");
+                e.printStackTrace();
+            }
+
+            //handle input from client socket
+            String inputFromClient = null;
+            try {
+                do {
+                    inputFromClient = input.readLine();
+                    mInputs.add(inputFromClient);
+                    mInputs.removeAll(Collections.singleton(null));
+                } while (!inputFromClient.equals(""));
+
+
+            } catch (IOException e) {
+                System.out.println("Error."); //CHANGE ME
+                e.printStackTrace();
+            }
+
+            System.out.println("We are out of the loop");
+            Header header = new Header(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
+            try {
+                String strHeader = header.writeResponse();
+                byte[] bHeaderByte = strHeader.getBytes();
+                output.write(bHeaderByte);
+                mFileToSend = header.getFileToSend();
+                if (!mFileToSend.equals(null)) {
+                    byte[] bFileToSend = new byte[(int) mFileToSend.length()];
+                    FileInputStream inputStream = new FileInputStream(mFileToSend);
+                    inputStream.read(bFileToSend);
+                    output.write(bFileToSend, 0, bFileToSend.length);
+                }
+                output.flush();
+                mInputs.clear();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
 

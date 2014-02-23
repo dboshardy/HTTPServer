@@ -153,6 +153,7 @@ public class Header {
 			} else if(whichStatusCode()==301) {
 				//redirect Location:
 				msg.append(writeLocation(mRedirectMap.get(mFile)));
+                msg.append("\r\n");
                 mFileToSend = null;
 			} else {
 				//do nothing b/c requested resource does not exist
