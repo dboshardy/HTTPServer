@@ -50,9 +50,9 @@ public class Header {
     public String getRequestType() {
         return mRequestType;
     }
-    private boolean hasFile(String file){
+    private boolean hasFile(){
         boolean output = false;
-        if(mDirMap.containsKey(file)){
+        if(mDirMap.containsKey(mFile)){
             output = true;
         }
         return output;
@@ -93,68 +93,81 @@ public class Header {
         return mRequestType;
 
     }
-/*
+	
+	private int whichStatusCode() {
+		//if file exists, return 200
+		if(hasFile()){
+			return 200;
+		}
+		//if file does not exist, check redirect
+		else {
+			if(mRedirectMap.containsKey(mFile)){
+				return 301;
+			}
+			else {
+				return 404;
+			}
+		}
+	}
+	
 	//write the response header and 
-	private static String writeResponse(String requestType, String fileName, int statusCode, OutputStream os) {
+	private String writeResponse() {
+		StringBuilder msg = new StringBuilder();
+		
 		//Status Line
-		os.write(writeStatus(statusCode).getBytes());
+		msg.append(writeStatus());
 		//System.out.println(writeStatus(statusCode))
 		
-		if(requestType.equals("GET") || requestType.equals("HEAD")) {
+		if(mRequestType.equals("GET") || mRequestType.equals("HEAD")) {
 			//send out Content-Type
-			if(statusCode==200) {
+			if(whichStatusCode()==200) {
 				// Content Type
-				os.write(writeContentType(fileName).getBytes());
+				msg.append(writeContentType());
 				// Content Length
-				os.write(writeContentLength(fileName).getBytes());
+				msg.append(writeContentLength());
 				// Connection Type
-				os.write("Connection: close\r\n".getBytes());
+				msg.append("Connection: close\r\n");
 				//Extra line break
-				os.write("\r\n".getBytes());
+				msg.append("\r\n");
 				//System.out.println(writeContentType(fileName))
-					if(requestType.equals("GET")) {
+					/*if(requestType.equals("GET")) {
 						sendBytes(fileName, os);
-					}
-			} else if(statusCode==301) {
+					}*/
+			} else if(whichStatusCode()==301) {
 				//redirect Location:
-				os.write(writeLocation(fileName).getBytes());
+				msg.append(writeLocation(mRedirectMap.get(mFile)));
 			} else {
 				//do nothing b/c requested resource does not exist
-				os.write("\r\n".getBytes());
+				msg.append("\r\n");
 			}
 		}
 		
-		return;	
+		return msg.toString();	
 	}
 	
-    // returns true if directory has file
-    private boolean hasFile(String strFile) {
-        return false;
-    }
-
     // reads redirect into hashmap for fast lookup
     // read file and parse lines into hashtable
     // format: /file http://www.url.to.redirect.com
 	
-	private static String writeContentLength(String fileName) {
-		File f = new File(fileName);
+	private String writeContentLength() {
+		File f = new File(mFile);
 		return "Content-Length: "+f.length()+"\r\n";
 	}
 	
-	private static String writeContentType(String fileName) {
-		return "Content-Type: "+getContentType(fileName)+"\r\n";
+	private String writeContentType() {
+		return "Content-Type: "+getContentType()+"\r\n";
 	}
 
-    private String getContentType(String input) {
-        if (fileName.endsWith(".htm") || fileName.endsWith(".html")) {
+    private String getContentType() {
+        if (mFile.endsWith(".htm") || mFile.endsWith(".html")) {
 			return "text/html\r\n";
-		} else if (fileName.endsWith(".txt")) {
+		} else if (mFile.endsWith(".txt")) {
 			return "text/plain\r\n";
-		} else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+		} else if (mFile.endsWith(".jpg") || mFile.endsWith(".jpeg")) {
 			return "image/jpeg\r\n";
-		} else if (fileName.endsWith(".png")) {
+		} else if (mFile.endsWith(".png")) {
 			return "image/png\r\n";
-		} else if (fileName.endsWith(".pdf")) {
+		} else if (mFile.endsWith(".pdf")) {
 			return "application/pdf\r\n";	
 		} else {
 			return "application/octet-stream\r\n";
@@ -166,16 +179,16 @@ public class Header {
 	}
 	
 	// writes the status code line based on a given status code
-	private static String writeStatus(int statusCode) {
-		if (statusCode == 200) {
+	private String writeStatus() {
+		if (whichStatusCode() == 200) {
 			return "HTTP/1.0 200 OK\r\n";
-		} else if (statusCode==301) {
+		} else if (whichStatusCode()==301) {
 			return "HTTP/1.0 301 Moved Permanently\r\n";
-		} else if (statusCode==400) {
+		} else if (whichStatusCode()==400) {
 			return "HTTP/1.0 400 Bad Request\r\n";
-		} else if (statusCode==404) {
+		} else if (whichStatusCode()==404) {
 			return "HTTP/1.0 404 Not Found\r\n";
-		} else if (statusCode==301) {
+		} else if (whichStatusCode()==301) {
 			return "HTTP/1.0 505 HTTP Version Not Supported\r\n";
 		} else {
 			return "HTTP/1.0 500 Error\r\n";
@@ -183,7 +196,7 @@ public class Header {
 	}
 	
 	// send bytes of a file from file input stream to output stream
-	private static void sendBytes(FileInputStream fis, OutputStream os) throws Exception {
+	private void sendBytes(FileInputStream fis, OutputStream os) throws Exception {
 
 		byte[] buffer = new byte[1024];
 		int bytes = 0;
@@ -193,7 +206,7 @@ public class Header {
 		}
 		return;
 	}
-*/
+
 }
 
 
