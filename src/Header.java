@@ -16,6 +16,30 @@ public class Header {
         parseRequest();
     }
 
+    public ArrayList<String> getHeaders() {
+        return mHeaders;
+    }
+
+    public String getProtocol() {
+        return mProtocol;
+    }
+
+    public String getFile() {
+        return mFile;
+    }
+
+    public String getHost() {
+        return mHost;
+    }
+
+    public String getURL() {
+        return mURL;
+    }
+
+    public String getRequestType() {
+        return mRequestType;
+    }
+
     //for future debugging
     public String toString() {
         System.out.println(mProtocol);
