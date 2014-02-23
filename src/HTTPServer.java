@@ -33,7 +33,7 @@ public class HTTPServer {
     public HTTPServer(int portNum) {
 
         // read file path
-        File dir = new File("/home/$USER/54001/project1/www");
+        File dir = new File("/Users/yuentrevor/Documents/CSPP/Networks/www/"); //File("/home/$USER/54001/project1/www");
         // construct directory in field variable
         Collections.addAll(mDirectory,dir.listFiles());
         for(File file : mDirectory){
@@ -83,6 +83,7 @@ public class HTTPServer {
             while ((inputFromClient = input.readLine()) != null) {
                 mInputs.add(inputFromClient);
                 Header header = new Header(mInputs);
+				header.toString();
             }
         } catch (IOException e) {
             System.out.println("Error."); //CHANGE ME
@@ -98,9 +99,13 @@ public class HTTPServer {
 
 
         //get port number
-        int portNumber = getPortNumber(args[1]);
+        int portNumber = getPortNumber(args[0]);
         HTTPServer server = new HTTPServer(portNumber);
+
+
     }
+
+
     //this parses the port number from the options entered
     public static int getPortNumber(String port) {
         int myPort = 0;
