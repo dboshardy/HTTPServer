@@ -61,10 +61,14 @@ public class Header {
 
     private void parseRequest() {
         String[] input = mHeaders.get(0).split(" ");
+		for(String line : mHeaders) {
+			System.out.println(line);	
+		}
         String request = input[0]; // first word of first line of header is either GET or HEAD
         mFile = input[1];
         mProtocol = input[2];
-        mHost = mHeaders.get(1).replace("Host: ", "").trim();
+		
+        mHost = mHeaders.get(2).replace("Host: ", "").trim();
         mURL = mHost + mFile;
         parseRequestType(request);
     }

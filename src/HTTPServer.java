@@ -80,15 +80,22 @@ public class HTTPServer {
         //handle input from client socket
         String inputFromClient = null;
         try {
-            while ((inputFromClient = input.readLine()) != null) {
-                mInputs.add(inputFromClient);
-                Header header = new Header(mInputs);
-				header.toString();
-            }
+			do {
+				inputFromClient = input.readLine();
+				System.out.println(inputFromClient);
+				mInputs.add(inputFromClient);
+				mInputs.removeAll(Collections.singleton(null));
+				System.out.println(mInputs);
+			} while (!inputFromClient.equals(""));
+			
         } catch (IOException e) {
             System.out.println("Error."); //CHANGE ME
             e.printStackTrace();
         }
+
+		System.out.println("We are out of the loop");
+		Header header = new Header(mInputs);
+		header.toString();
     }
 
     public static void main(String[] args) {
