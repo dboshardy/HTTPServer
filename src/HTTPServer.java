@@ -78,7 +78,6 @@ public class HTTPServer {
         try {
             while ((inputFromClient = input.readLine()) != null) {
                 mInputs.add(inputFromClient);
-                parseInput(inputFromClient);
                 Header header = new Header(mInputs);
             }
         } catch (IOException e) {
@@ -107,12 +106,6 @@ public class HTTPServer {
         }
         System.out.println(myPort);
         return myPort;
-    }
-
-    // Parses input and returns some string...
-    private String parseInput(String input) {
-
-        return null;
     }
 
     private void readRedirect(String input) {
