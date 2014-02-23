@@ -65,6 +65,7 @@ public class HTTPServer {
             e.printStackTrace();
         }
 
+        while(true){
         //create new input reader
         BufferedReader input = null;
         try {
@@ -95,13 +96,16 @@ public class HTTPServer {
             byte[] bHeaderByte = strHeader.getBytes();
             output.write(bHeaderByte);
             mFileToSend = header.getFileToSend();
-            if (mFileToSend.equals(null)) {
+            if (!mFileToSend.equals(null)) {
                 byte[] bFileToSend = new byte[(int) mFileToSend.length()];
                 FileInputStream inputStream = new FileInputStream(mFileToSend);
-                output.write(inputStream.read(bFileToSend));
+                inputStream.read(bFileToSend);
+                output.write(bFileToSend,0,bFileToSend.length);
             }
+            output.flush();
         } catch (IOException e) {
             e.printStackTrace();
+        }
         }
 
 
