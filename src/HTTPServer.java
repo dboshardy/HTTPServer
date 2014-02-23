@@ -1,9 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by drew on 1/24/14.
@@ -29,8 +27,15 @@ public class HTTPServer {
     private final String FILE_FOUND = "200";
     private final String REDIRECT = "300";
     private String mResponse;
+    private ArrayList<File> mDirectory = new ArrayList<File>();
 
     public HTTPServer(int portNum) {
+
+        // read file path
+        File dir = new File("/home/$USER/54001/project1/www");
+        // construct directory in field variable
+        Collections.addAll(mDirectory,dir.listFiles());
+
         ServerSocket myHTTPServerSocket = null;
 
         //create new server socket
