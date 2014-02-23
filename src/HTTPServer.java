@@ -28,10 +28,11 @@ public class HTTPServer {
     private String mResponse;
     private ArrayList<File> mDirectory = new ArrayList<File>();
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
+    private File mFileToSend;
 
     public HTTPServer(int portNum) {
         File dir = new File("/home/drew/54001/project1/www/"); //File("/home/$USER/54001/project1/www");
-        constructDirectory(dir,dir.getName());
+        constructDirectory(dir, dir.getName());
         initializeServer(portNum);
     }
 
@@ -56,9 +57,9 @@ public class HTTPServer {
         }
 
         //create new output writer
-        OutputStreamWriter output = null;
+        OutputStream output = null;
         try {
-            output = new OutputStreamWriter(myClientSocket.getOutputStream());
+            output = myClientSocket.getOutputStream();
         } catch (IOException e) {
             System.out.println("Could not connect to socket.");
             e.printStackTrace();
@@ -90,8 +91,15 @@ public class HTTPServer {
         System.out.println("We are out of the loop");
         Header header = new Header(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
         try {
-            output.write(header.writeResponse());
-            output.flush();
+            String strHeader = header.writeResponse();
+            byte[] bHeaderByte = strHeader.getBytes();
+            output.write(bHeaderByte);
+            mFileToSend = header.getFileToSend();
+            if (mFileToSend.equals(null)) {
+                byte[] bFileToSend = new byte[(int) mFileToSend.length()];
+                FileInputStream inputStream = new FileInputStream(mFileToSend);
+                output.write(inputStream.read(bFileToSend));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,19 +107,19 @@ public class HTTPServer {
 
     }
 
-    private void constructDirectory(File dir,String fileName) {
+    private void constructDirectory(File dir, String fileName) {
 
         // construct directory in field variable
         ArrayList<File> tempList = new ArrayList<File>();
         Collections.addAll(tempList, dir.listFiles());
         for (File file : tempList) {
             if (file.isDirectory()) {
-                constructDirectory(file,fileName+"/");
+                constructDirectory(file, fileName + "/");
             } else {
                 String outputFileName = null;
                 try {
                     outputFileName = new String(file.getCanonicalPath());
-                    outputFileName = outputFileName.substring(outputFileName.indexOf("www/")).replace("www/","/");
+                    outputFileName = outputFileName.substring(outputFileName.indexOf("www/")).replace("www/", "/");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

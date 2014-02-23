@@ -19,6 +19,7 @@ public class Header {
     private final HashMap<String,String> mRedirectMap;
     private HashMap<String,File> mDirMap = new HashMap<String, File>();
     private ArrayList<File> mDirectory = new ArrayList<File>();
+    private File mFileToSend;
 
     public Header(ArrayList<String> headers,ArrayList<File> directory,HashMap<String,File> dirmap,HashMap<String,String> redirmap) {
         mHeaders = headers;
@@ -27,6 +28,10 @@ public class Header {
         mRedirectMap = redirmap;
         System.out.println(mDirMap);
         parseRequest();
+    }
+
+    public File getFileToSend() {
+        return mFileToSend;
     }
 
     public HashMap<String, String> getRedirectMap() {
@@ -144,20 +149,18 @@ public class Header {
 				msg.append("Connection: close\r\n");
 				//Extra line break
 				msg.append("\r\n");
-				//System.out.println(writeContentType(fileName))
-					/*if(requestType.equals("GET")) {
-						sendBytes(fileName, os);
-					}*/
+                mFileToSend = mDirMap.get(mFile);
 			} else if(whichStatusCode()==301) {
 				//redirect Location:
 				msg.append(writeLocation(mRedirectMap.get(mFile)));
+                mFileToSend = null;
 			} else {
 				//do nothing b/c requested resource does not exist
 				msg.append("\r\n");
+                mFileToSend = null;
 			}
 		}
-		
-		return msg.toString();	
+		return msg.toString();
 	}
 	
     // reads redirect into hashmap for fast lookup
@@ -170,7 +173,7 @@ public class Header {
 	}
 	
 	private String writeContentType() {
-		return "Content-Type: "+getContentType()+"\r\n";
+		return "Content-Type: "+getContentType();
 	}
 
     private String getContentType() {
