@@ -1,13 +1,8 @@
+import java.io.*;
 import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
 /**
@@ -20,9 +15,15 @@ public class Header {
     private String mHost;
     private String mURL;
     private String mRequestType;
+    private final HashMap<String,String> mRedirectMap;
+    private HashMap<String,File> mDirMap = new HashMap<String, File>();
+    private ArrayList<File> mDirectory = new ArrayList<File>();
 
-    public Header(ArrayList<String> headers) {
+    public Header(ArrayList<String> headers,ArrayList<File> directory,HashMap<String,File> dirmap,HashMap<String,String> redirmap) {
         mHeaders = headers;
+        mDirectory = directory;
+        mDirMap = dirmap;
+        mRedirectMap = redirmap;
         parseRequest();
     }
 
@@ -48,6 +49,13 @@ public class Header {
 
     public String getRequestType() {
         return mRequestType;
+    }
+    private boolean hasFile(String file){
+        boolean output = false;
+        if(mDirMap.containsKey(file)){
+            output = true;
+        }
+        return output;
     }
 
     //for future debugging

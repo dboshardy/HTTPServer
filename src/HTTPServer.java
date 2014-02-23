@@ -94,7 +94,7 @@ public class HTTPServer {
         }
 
 		System.out.println("We are out of the loop");
-		Header header = new Header(mInputs);
+		Header header = new Header(mInputs,mDirectory,mDirectoryMap,mRedirectMap);
 		header.toString();
     }
 
@@ -137,13 +137,6 @@ public class HTTPServer {
             String[] words = line.split(" ");
             mRedirectMap.put(words[0], words[1]); // put /file as key and http://.... as value
         }
-    }
-    private boolean hasFile(String file){
-        boolean output = false;
-        if(mDirectoryMap.containsKey(file)){
-            output = true;
-        }
-        return output;
     }
 
 }
