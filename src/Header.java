@@ -116,15 +116,13 @@ public class Header {
     }
 
     private int whichStatusCode() {
-		if (mRequestType.equals("OTHER") {
-			return 403;
-		}
-        //if file exists, return 200
-        else if (hasFile()) {
+        if (mRequestType.equals("OTHER")) {
+            return 403;
+        } else if (hasFile()) {
+            //if file exists, return 200
             return 200;
-        }
-        //if file does not exist, check redirect
-        else {
+        } else {
+            //if file does not exist, check redirect
             if (mRedirectMap.containsKey(mFile)) {
                 return 301;
             } else {
@@ -165,9 +163,9 @@ public class Header {
                 mFileToSend = null;
             }
         } else {
-			msg.append("\r\n");
-			mFileToSend = null;	
-		}
+            msg.append("\r\n");
+            mFileToSend = null;
+        }
         return msg.toString();
     }
 
