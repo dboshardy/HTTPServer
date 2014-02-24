@@ -16,12 +16,12 @@ public class Header {
     private String mHost;
     private String mURL;
     private String mRequestType;
-    private final HashMap<String,String> mRedirectMap;
-    private HashMap<String,File> mDirMap = new HashMap<String, File>();
+    private final HashMap<String, String> mRedirectMap;
+    private HashMap<String, File> mDirMap = new HashMap<String, File>();
     private ArrayList<File> mDirectory = new ArrayList<File>();
     private File mFileToSend;
 
-    public Header(ArrayList<String> headers,ArrayList<File> directory,HashMap<String,File> dirmap,HashMap<String,String> redirmap) {
+    public Header(ArrayList<String> headers, ArrayList<File> directory, HashMap<String, File> dirmap, HashMap<String, String> redirmap) {
         mHeaders = headers;
         mDirectory = directory;
         mDirMap = dirmap;
@@ -69,10 +69,11 @@ public class Header {
     public String getRequestType() {
         return mRequestType;
     }
-    private boolean hasFile(){
-        System.out.println("File name: "+mFile);
+
+    private boolean hasFile() {
+        System.out.println("File name: " + mFile);
         boolean output = false;
-        if(mDirMap.containsKey(mFile)){
+        if (mDirMap.containsKey(mFile)) {
             output = true;
         }
         return output;
@@ -89,13 +90,13 @@ public class Header {
 
     private void parseRequest() {
         String[] input = mHeaders.get(0).split(" ");
-		for(String line : mHeaders) {
-			System.out.println(line);	
-		}
+        for (String line : mHeaders) {
+            System.out.println(line);
+        }
         String request = input[0]; // first word of first line of header is either GET or HEAD
         mFile = input[1];
         mProtocol = input[2];
-		
+
         mHost = mHeaders.get(2).replace("Host: ", "").trim();
         mURL = mHost + mFile;
         parseRequestType(request);
@@ -108,112 +109,113 @@ public class Header {
         } else if (request.equals("HEAD")) {
             mRequestType = "HEAD";
         } else {
-			mRequestType = "OTHER";
-		}
+            mRequestType = "OTHER";
+        }
         return mRequestType;
 
     }
-	
-	private int whichStatusCode() {
-		//if file exists, return 200
-		if(hasFile()){
-			return 200;
-		}
-		//if file does not exist, check redirect
-		else {
-			if(mRedirectMap.containsKey(mFile)){
-				return 301;
-			}
-			else {
-				return 404;
-			}
-		}
-	}
-	
-	//write the response header and 
-	public String writeResponse() {
-		StringBuilder msg = new StringBuilder();
-		
-		//Status Line
-		msg.append(writeStatus());
-		//System.out.println(writeStatus(statusCode))
-		
-		if(mRequestType.equals("GET") || mRequestType.equals("HEAD")) {
-			//send out Content-Type
-			if(whichStatusCode()==200) {
-				// Content Type
-				msg.append(writeContentType());
-				// Content Length
-				msg.append(writeContentLength());
-				// Connection Type
-				msg.append("Connection: close\r\n");
-				//Extra line break
-				msg.append("\r\n");
+
+    private int whichStatusCode() {
+        //if file exists, return 200
+        if (hasFile()) {
+            return 200;
+        }
+        //if file does not exist, check redirect
+        else {
+            if (mRedirectMap.containsKey(mFile)) {
+                return 301;
+            } else {
+                return 404;
+            }
+        }
+    }
+
+    //write the response header and
+    public String writeResponse() {
+        StringBuilder msg = new StringBuilder();
+
+        //Status Line
+        msg.append(writeStatus());
+        //System.out.println(writeStatus(statusCode))
+
+        if (mRequestType.equals("GET") || mRequestType.equals("HEAD")) {
+            //send out Content-Type
+            if (whichStatusCode() == 200) {
+                // Content Type
+                msg.append(writeContentType());
+                // Content Length
+                msg.append(writeContentLength());
+                // Connection Type
+                msg.append("Connection: close\r\n");
+                //Extra line break
+                msg.append("\r\n");
                 mFileToSend = mDirMap.get(mFile);
-			} else if(whichStatusCode()==301) {
-				//redirect Location:
+            } else if (whichStatusCode() == 301) {
+                //redirect Location:
                 System.out.println(mRedirectMap.get(mFile));
                 msg.append(writeLocation(mRedirectMap.get(mFile)));
                 msg.append("\r\n");
                 mFileToSend = null;
-			} else {
-				//do nothing b/c requested resource does not exist
-				msg.append("\r\n");
+            } else {
+                //do nothing b/c requested resource does not exist
+                msg.append("\r\n");
                 mFileToSend = null;
-			}
-		}
-		return msg.toString();
-	}
-	
+            }
+        }
+        return msg.toString();
+    }
+
     // reads redirect into hashmap for fast lookup
     // read file and parse lines into hashtable
     // format: /file http://www.url.to.redirect.com
-	
-	private String writeContentLength() {
-		File f = mDirMap.get(mFile);
-		return "Content-Length: "+f.length()+"\r\n";
-	}
-	
-	private String writeContentType() {
-		return "Content-Type: "+getContentType();
-	}
+
+    private String writeContentLength() {
+        File f = mDirMap.get(mFile);
+        return "Content-Length: " + f.length() + "\r\n";
+    }
+
+    private String writeContentType() {
+        return "Content-Type: " + getContentType();
+    }
 
     private String getContentType() {
         if (mFile.endsWith(".htm") || mFile.endsWith(".html")) {
-			return "text/html\r\n";
-		} else if (mFile.endsWith(".txt")) {
-			return "text/plain\r\n";
-		} else if (mFile.endsWith(".jpg") || mFile.endsWith(".jpeg")) {
-			return "image/jpeg\r\n";
-		} else if (mFile.endsWith(".png")) {
-			return "image/png\r\n";
-		} else if (mFile.endsWith(".pdf")) {
-			return "application/pdf\r\n";	
-		} else {
-			return "application/octet-stream\r\n";
-		}
+            return "text/html\r\n";
+        } else if (mFile.endsWith(".txt")) {
+            return "text/plain\r\n";
+        } else if (mFile.endsWith(".jpg") || mFile.endsWith(".jpeg")) {
+            return "image/jpeg\r\n";
+        } else if (mFile.endsWith(".png")) {
+            return "image/png\r\n";
+        } else if (mFile.endsWith(".pdf")) {
+            return "application/pdf\r\n";
+        } else {
+            return "application/octet-stream\r\n";
+        }
     }
-	
-	private String writeLocation(String url) {
-		return "Location: "+url+"\r\n";
-	}
-	
-	// writes the status code line based on a given status code
-	private String writeStatus() {
-		if (whichStatusCode() == 200) {
-			return "HTTP/1.0 200 OK\r\n";
-		} else if (whichStatusCode()==301) {
-			return "HTTP/1.0 301 Moved Permanently\r\n";
-		} else if (whichStatusCode()==400) {
-			return "HTTP/1.0 400 Bad Request\r\n";
-		} else if (whichStatusCode()==404) {
-			return "HTTP/1.0 404 Not Found\r\n";
-		} else if (whichStatusCode()==501) {
-			return "HTTP/1.0 505 HTTP Version Not Supported\r\n";
-		} else {
-			return "HTTP/1.0 500 Error\r\n";
-		}
-	}
+
+    private String writeLocation(String url) {
+        return "Location: " + url + "\r\n";
+    }
+
+    // writes the status code line based on a given status code
+    private String writeStatus() {
+        if (whichStatusCode() == 200) {
+            return "HTTP/1.0 200 OK\r\n";
+        } else if (whichStatusCode() == 301) {
+            return "HTTP/1.0 301 Moved Permanently\r\n";
+        } else if (whichStatusCode() == 400) {
+            return "HTTP/1.0 400 Bad Request\r\n";
+        } else if (whichStatusCode() == 404) {
+            return "HTTP/1.0 404 Not Found\r\n";
+        } else if (whichStatusCode() == 403) {
+            return "HTTP/1.0 403 Forbidden\r\n";
+        } else if (whichStatusCode() == 501) {
+            return "HTTP/1.0 505 HTTP Version Not Supported\r\n";
+        } else {
+            return "HTTP/1.0 500 Error\r\n";
+        }
+    }
 
 }
 
