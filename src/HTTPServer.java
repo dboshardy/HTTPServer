@@ -23,9 +23,6 @@ import java.util.*;
 public class HTTPServer {
     public ArrayList<String> mInputs = new ArrayList<String>();
     public HashMap<String, String> mRedirectMap = new HashMap<String, String>();
-    private final String FILE_NOT_FOUND = "404";
-    private final String FILE_FOUND = "200";
-    private final String REDIRECT = "300";
     private String mResponse;
     private ArrayList<File> mDirectory = new ArrayList<File>();
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
@@ -99,7 +96,7 @@ public class HTTPServer {
                 byte[] bHeaderByte = strHeader.getBytes();
                 output.write(bHeaderByte);
                 mFileToSend = header.getFileToSend();
-                if (!(mFileToSend==null)) {
+                if (!(mFileToSend == null)) {
                     byte[] bFileToSend = new byte[(int) mFileToSend.length()];
                     FileInputStream inputStream = new FileInputStream(mFileToSend);
                     inputStream.read(bFileToSend);
@@ -185,18 +182,6 @@ public class HTTPServer {
             String[] words = line.split(" ");
             mRedirectMap.put(words[0], words[1]); // put /file as key and http://.... as value
         }
-    }
-
-    // send bytes of a file from file input stream to output stream
-    private void sendBytes(FileInputStream fis, OutputStream os) throws Exception {
-
-        byte[] buffer = new byte[1024];
-        int bytes = 0;
-
-        while ((bytes = fis.read(buffer)) != -1) {
-            os.write(buffer, 0, bytes);
-        }
-        return;
     }
 
 }
