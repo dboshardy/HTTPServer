@@ -152,7 +152,8 @@ public class Header {
                 mFileToSend = mDirMap.get(mFile);
 			} else if(whichStatusCode()==301) {
 				//redirect Location:
-				msg.append(writeLocation(mRedirectMap.get(mFile)));
+                System.out.println(mRedirectMap.get(mFile));
+                msg.append(writeLocation(mRedirectMap.get(mFile)));
                 msg.append("\r\n");
                 mFileToSend = null;
 			} else {
@@ -207,7 +208,7 @@ public class Header {
 			return "HTTP/1.0 400 Bad Request\r\n";
 		} else if (whichStatusCode()==404) {
 			return "HTTP/1.0 404 Not Found\r\n";
-		} else if (whichStatusCode()==301) {
+		} else if (whichStatusCode()==501) {
 			return "HTTP/1.0 505 HTTP Version Not Supported\r\n";
 		} else {
 			return "HTTP/1.0 500 Error\r\n";

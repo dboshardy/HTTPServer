@@ -17,6 +17,7 @@ import java.util.*;
  * if not found, return 404
  * if redirect return redirect
  * if head return headers only
+ *
  */
 
 public class HTTPServer {
@@ -30,13 +31,14 @@ public class HTTPServer {
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
     private File mFileToSend;
 
-    public HTTPServer(int portNum) {
-        File dir = new File("/home/drew/54001/project1/www/"); //File("/home/$USER/54001/project1/www");
+    public HTTPServer(int portNum) throws IOException {
+        File dir = new File("/home/$USERNAME/54001/project1/www/"); //File("/home/$USER/54001/project1/www");
         constructDirectory(dir, dir.getName());
+        readRedirect();
         initializeServer(portNum);
     }
 
-    private void initializeServer(int portNum) {
+    private void initializeServer(int portNum) throws IOException {
         ServerSocket myHTTPServerSocket = null;
 
         //create new server socket
@@ -46,9 +48,9 @@ public class HTTPServer {
             System.out.println("Could not create socket. Please specify a port number using the format \'--port=###\'");
             e.printStackTrace();
         }
-
-        //create new client socket
         while (true) {
+
+            //create new client socket
             Socket myClientSocket = null;
             try {
                 myClientSocket = myHTTPServerSocket.accept();
@@ -97,7 +99,7 @@ public class HTTPServer {
                 byte[] bHeaderByte = strHeader.getBytes();
                 output.write(bHeaderByte);
                 mFileToSend = header.getFileToSend();
-                if (!mFileToSend.equals(null)) {
+                if (!(mFileToSend==null)) {
                     byte[] bFileToSend = new byte[(int) mFileToSend.length()];
                     FileInputStream inputStream = new FileInputStream(mFileToSend);
                     inputStream.read(bFileToSend);
@@ -108,9 +110,13 @@ public class HTTPServer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            try {
+                myClientSocket.close();
+            } catch (IOException e) {
+                System.out.println("Error.");
+                e.printStackTrace();
+            }
         }
-
-
     }
 
     private void constructDirectory(File dir, String fileName) {
@@ -145,7 +151,11 @@ public class HTTPServer {
 
         //get port number
         int portNumber = getPortNumber(args[0]);
-        HTTPServer server = new HTTPServer(portNumber);
+        try {
+            HTTPServer server = new HTTPServer(portNumber);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -161,8 +171,8 @@ public class HTTPServer {
         return myPort;
     }
 
-    private void readRedirect(String input) {
-        File file = new File("www/redirect.defs");
+    private void readRedirect() {
+        File file = mDirectoryMap.get("/redirect.defs");
         Scanner scanner = null;
         try {
             scanner = new Scanner(file);
