@@ -137,7 +137,6 @@ public class Header {
 
         //Status Line
         msg.append(writeStatus());
-        //System.out.println(writeStatus(statusCode))
 
         if (mRequestType.equals("GET") || mRequestType.equals("HEAD")) {
             //send out Content-Type
@@ -150,7 +149,12 @@ public class Header {
                 msg.append("Connection: close\r\n");
                 //Extra line break
                 msg.append("\r\n");
-                mFileToSend = mDirMap.get(mFile);
+                if(mRequestType.equals("HEAD")){
+                    mFileToSend = null;
+                }
+                else{
+                    mFileToSend = mDirMap.get(mFile);
+                }
             } else if (whichStatusCode() == 301) {
                 //redirect Location:
                 System.out.println(mRedirectMap.get(mFile));
@@ -169,13 +173,10 @@ public class Header {
         return msg.toString();
     }
 
-    // reads redirect into hashmap for fast lookup
-    // read file and parse lines into hashtable
-    // format: /file http://www.url.to.redirect.com
 
     private String writeContentLength() {
-        File f = mDirMap.get(mFile);
-        return "Content-Length: " + f.length() + "\r\n";
+            File f = mDirMap.get(mFile);
+            return "Content-Length: " + f.length() + "\r\n";
     }
 
     private String writeContentType() {

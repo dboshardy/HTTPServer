@@ -1,7 +1,14 @@
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * Created by drew on 1/24/14.
@@ -20,7 +27,7 @@ import java.util.*;
  *
  */
 
-public class HTTPServer {
+public class SecureHTTPServer {
     public ArrayList<String> mInputs = new ArrayList<String>();
     public HashMap<String, String> mRedirectMap = new HashMap<String, String>();
     private String mResponse;
@@ -28,7 +35,7 @@ public class HTTPServer {
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
     private File mFileToSend;
 
-    public HTTPServer(int portNum) throws IOException {
+    public SecureHTTPServer(int portNum) throws IOException {
         File dir = new File("/home/$USERNAME/54001/project1/www/");
         constructDirectory(dir, dir.getName());
         readRedirect();
@@ -36,11 +43,13 @@ public class HTTPServer {
     }
 
     private void initializeServer(int portNum) throws IOException {
-        ServerSocket myHTTPServerSocket = null;
+        SSLServerSocket myHTTPServerSocket = null;
 
         //create new server socket
+        SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+
         try {
-            myHTTPServerSocket = new ServerSocket(portNum);
+            myHTTPServerSocket = (SSLServerSocket) serverFactory.createServerSocket(portNum);
         } catch (IOException e) {
             System.out.println("Could not create socket. Please specify a port number using the format \'--port=###\'");
             e.printStackTrace();
@@ -48,9 +57,10 @@ public class HTTPServer {
         while (true) {
 
             //create new client socket
-            Socket myClientSocket = null;
+            SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            SSLSocket myClientSocket = null;
             try {
-                myClientSocket = myHTTPServerSocket.accept();
+                myClientSocket = (SSLSocket) myHTTPServerSocket.accept();
             } catch (IOException e) {
                 System.out.println("Could not connect to socket.");
                 e.printStackTrace();
@@ -149,7 +159,7 @@ public class HTTPServer {
         //get port number
         int portNumber = getPortNumber(args[0]);
         try {
-            HTTPServer server = new HTTPServer(portNumber);
+            SecureHTTPServer server = new SecureHTTPServer(portNumber);
         } catch (IOException e) {
             e.printStackTrace();
         }
