@@ -48,30 +48,34 @@ public class SecureHTTPServer {
     }
 
     private void initializeServer(int portNum) throws IOException, CertificateException, NoSuchAlgorithmException {
-        KeyStore mKeyStore = null;
-        try {
-            String pw = "password";
-            String keyManagerPw = "password";
-            char[] keyManPassword = keyManagerPw.toCharArray();
-            char[] password = pw.toCharArray();
-            mKeyStore = KeyStore.getInstance("JKS");
-            mKeyStore.load(new FileInputStream("server.jks"), password);
-
-            KeyManagerFactory managerFactory =
-                    KeyManagerFactory.getInstance("SunX509");
-            managerFactory.init(mKeyStore,keyManPassword);
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
-        }
         SSLServerSocket myHTTPServerSocket = null;
-
-        //create new server socket
-        SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-
         try {
-            myHTTPServerSocket = (SSLServerSocket) serverFactory.createServerSocket(portNum);
+            KeyStore mKeyStore = null;
+            try {
+                String pw = "password";
+                String keyStorePw = "password";
+                char[] keyManPassword = keyStorePw.toCharArray();
+                char[] password = pw.toCharArray();
+                mKeyStore = KeyStore.getInstance("JKS");
+                mKeyStore.load(new FileInputStream("/home/drew/Dropbox/MSCS/Networks/HTTPServer/src/server.jks"), password);
+
+                KeyManagerFactory managerFactory =
+                        KeyManagerFactory.getInstance("SunX509");
+                managerFactory.init(mKeyStore, keyManPassword);
+                SSLContext sc = SSLContext.getInstance("TLS");
+                sc.init(managerFactory.getKeyManagers(),null,null);
+
+                //create new server socket
+                SSLServerSocketFactory serverFactory = sc.getServerSocketFactory();
+
+                myHTTPServerSocket = (SSLServerSocket) serverFactory.createServerSocket(portNum);
+            } catch (KeyStoreException e) {
+                e.printStackTrace();
+            } catch (UnrecoverableKeyException e) {
+                e.printStackTrace();
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             System.out.println("Could not create socket. Please specify a port number using the format \'--port=###\'");
             e.printStackTrace();
@@ -134,6 +138,7 @@ public class SecureHTTPServer {
                     inputStream.read(bFileToSend);
                     output.write(bFileToSend, 0, bFileToSend.length);
                 }
+                System.out.println(header.toString());
                 output.flush();
                 mInputs.clear();
             } catch (IOException e) {
