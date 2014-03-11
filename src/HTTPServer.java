@@ -29,7 +29,7 @@ public class HTTPServer {
     private File mFileToSend;
 
     public HTTPServer(int portNum) throws IOException {
-        File dir = new File("/home/$USERNAME/54001/project1/www/");
+        File dir = new File("/home/drew/54001/project1/www/");
         constructDirectory(dir, dir.getName());
         readRedirect();
         initializeServer(portNum);

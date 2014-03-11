@@ -1,10 +1,9 @@
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,13 +35,36 @@ public class SecureHTTPServer {
     private File mFileToSend;
 
     public SecureHTTPServer(int portNum) throws IOException {
-        File dir = new File("/home/$USERNAME/54001/project1/www/");
+        File dir = new File("/home/drew/54001/project1/www/");
         constructDirectory(dir, dir.getName());
         readRedirect();
-        initializeServer(portNum);
+        try {
+            initializeServer(portNum);
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void initializeServer(int portNum) throws IOException {
+    private void initializeServer(int portNum) throws IOException, CertificateException, NoSuchAlgorithmException {
+        KeyStore mKeyStore = null;
+        try {
+            String pw = "password";
+            String keyManagerPw = "password";
+            char[] keyManPassword = keyManagerPw.toCharArray();
+            char[] password = pw.toCharArray();
+            mKeyStore = KeyStore.getInstance("JKS");
+            mKeyStore.load(new FileInputStream("server.jks"), password);
+
+            KeyManagerFactory managerFactory =
+                    KeyManagerFactory.getInstance("SunX509");
+            managerFactory.init(mKeyStore,keyManPassword);
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        }
         SSLServerSocket myHTTPServerSocket = null;
 
         //create new server socket
