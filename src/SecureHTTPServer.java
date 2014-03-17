@@ -35,7 +35,7 @@ public class SecureHTTPServer {
     private File mFileToSend;
 
     public SecureHTTPServer(int portNum) throws IOException {
-        File dir = new File("/home/drew/54001/project1/www/");
+        File dir = new File("./www/");
         constructDirectory(dir, dir.getName());
         readRedirect();
         try {
