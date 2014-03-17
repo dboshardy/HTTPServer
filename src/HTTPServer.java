@@ -52,7 +52,7 @@ public class HTTPServer {
             try {
                 myClientSocket = myHTTPServerSocket.accept();
             } catch (IOException e) {
-                System.out.println("Could not connect to socket.");
+                System.out.println("Could not connect to server socket.");
                 e.printStackTrace();
             }
 
@@ -61,7 +61,7 @@ public class HTTPServer {
             try {
                 output = myClientSocket.getOutputStream();
             } catch (IOException e) {
-                System.out.println("Could not connect to socket.");
+                System.out.println("Could not connect to client socket.");
                 e.printStackTrace();
             }
 
@@ -70,7 +70,7 @@ public class HTTPServer {
             try {
                 input = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
             } catch (IOException e) {
-                System.out.println("Could not connect to socket.");
+                System.out.println("Could not create inputstream.");
                 e.printStackTrace();
             }
 
