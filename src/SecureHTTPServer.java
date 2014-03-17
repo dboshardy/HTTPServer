@@ -83,12 +83,11 @@ public class SecureHTTPServer {
         while (true) {
 
             //create new client socket
-            SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             SSLSocket myClientSocket = null;
             try {
                 myClientSocket = (SSLSocket) myHTTPServerSocket.accept();
             } catch (IOException e) {
-                System.out.println("Could not connect to socket.");
+                System.out.println("Could not connect client to server socket.");
                 e.printStackTrace();
             }
 
@@ -97,7 +96,7 @@ public class SecureHTTPServer {
             try {
                 output = myClientSocket.getOutputStream();
             } catch (IOException e) {
-                System.out.println("Could not connect to socket.");
+                System.out.println("Could not get output stream.");
                 e.printStackTrace();
             }
 
@@ -106,7 +105,7 @@ public class SecureHTTPServer {
             try {
                 input = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
             } catch (IOException e) {
-                System.out.println("Could not connect to socket.");
+                System.out.println("Could not get input stream.");
                 e.printStackTrace();
             }
 
