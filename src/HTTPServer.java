@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -29,7 +30,8 @@ public class HTTPServer {
     private File mFileToSend;
 
     public HTTPServer(int portNum) throws IOException {
-        File dir = new File("www/");
+        URL url = getClass().getResource("www");
+        File dir = new File(url.getPath());
         constructDirectory(dir, dir.getName());
         readRedirect();
         initializeServer(portNum);

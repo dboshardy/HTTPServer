@@ -36,7 +36,7 @@ public class SecureHTTPServer {
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
     private File mFileToSend;
 
-    public SecureHTTPServer(int portNum){
+    public SecureHTTPServer(int portNum) {
         URL url = getClass().getResource("www");
         File dir = new File(url.getPath());
         constructDirectory(dir, dir.getName());
@@ -69,7 +69,7 @@ public class SecureHTTPServer {
                         KeyManagerFactory.getInstance("SunX509");
                 managerFactory.init(mKeyStore, keyManPassword);
                 SSLContext sc = SSLContext.getInstance("TLS");
-                sc.init(managerFactory.getKeyManagers(),null,null);
+                sc.init(managerFactory.getKeyManagers(), null, null);
 
                 //create new server socket
                 SSLServerSocketFactory serverFactory = sc.getServerSocketFactory();
@@ -116,13 +116,15 @@ public class SecureHTTPServer {
             }
 
             //handle input from client socket
-            String inputFromClient = null;
+            String inputFromClient = "";
             try {
-                do {
-                    inputFromClient = input.readLine();
+                while (!((inputFromClient = input.readLine()) == null)) {
+
                     mInputs.add(inputFromClient);
                     mInputs.removeAll(Collections.singleton(null));
-                } while (!inputFromClient.equals(""));
+                    mInputs.removeAll(Collections.singleton(""));
+                    System.out.flush();
+                }
 
 
             } catch (IOException e) {
