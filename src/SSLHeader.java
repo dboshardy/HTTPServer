@@ -205,19 +205,19 @@ public class SSLHeader {
     // writes the status code line based on a given status code
     private String writeStatus() {
         if (whichStatusCode() == 200) {
-            return "HTTPS/1.1 200 OK\r\n";
+            return "HTTP/1.1 200 OK\r\n";
         } else if (whichStatusCode() == 301) {
-            return "HTTPS/1.1 301 Moved Permanently\r\n";
+            return "HTTP/1.1 301 Moved Permanently\r\n";
         } else if (whichStatusCode() == 400) {
-            return "HTTPS/1.1 400 Bad Request\r\n";
+            return "HTTP/1.1 400 Bad Request\r\n";
         } else if (whichStatusCode() == 404) {
-            return "HTTPS/1.1 404 Not Found\r\n";
+            return "HTTP/1.1 404 Not Found\r\n";
         } else if (whichStatusCode() == 403) {
-            return "HTTPS/1.1 403 Forbidden\r\n";
+            return "HTTP/1.1 403 Forbidden\r\n";
         } else if (whichStatusCode() == 501) {
-            return "HTTPS/1.1 505 HTTPS Version Not Supported\r\n";
+            return "HTTP/1.1 505 HTTPS Version Not Supported\r\n";
         } else {
-            return "HTTPS/1.1 500 Error\r\n";
+            return "HTTP/1.1 500 Error\r\n";
         }
     }
 
