@@ -2,12 +2,14 @@ import javax.net.ssl.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
+
 
 /**
  * Created by drew on 1/24/14.
@@ -34,8 +36,9 @@ public class SecureHTTPServer {
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
     private File mFileToSend;
 
-    public SecureHTTPServer(int portNum) throws IOException {
-        File dir = new File("./www/");
+    public SecureHTTPServer(int portNum){
+        URL url = getClass().getResource("www");
+        File dir = new File(url.getPath());
         constructDirectory(dir, dir.getName());
         readRedirect();
         try {
@@ -43,6 +46,8 @@ public class SecureHTTPServer {
         } catch (CertificateException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -57,7 +62,8 @@ public class SecureHTTPServer {
                 char[] keyManPassword = keyStorePw.toCharArray();
                 char[] password = pw.toCharArray();
                 mKeyStore = KeyStore.getInstance("JKS");
-                mKeyStore.load(new FileInputStream("/home/drew/Dropbox/MSCS/Networks/HTTPServer/src/server.jks"), password);
+                URL keyURL = getClass().getResource("server.jks");
+                mKeyStore.load(new FileInputStream(keyURL.getPath()), password);
 
                 KeyManagerFactory managerFactory =
                         KeyManagerFactory.getInstance("SunX509");
@@ -125,7 +131,7 @@ public class SecureHTTPServer {
             }
 
             System.out.println("We are out of the loop");
-            SSLHeader header = new Header(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
+            SSLHeader header = new SSLHeader(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
             try {
                 String strHeader = header.writeResponse();
                 byte[] bHeaderByte = strHeader.getBytes();
@@ -181,15 +187,9 @@ public class SecureHTTPServer {
             System.out.println("Invalid options.  Please specify the port number you wish to connect with using \'--port=####\'");
         }
 
-
         //get port number
         int portNumber = getPortNumber(args[0]);
-        try {
-            SecureHTTPServer server = new SecureHTTPServer(portNumber);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        SecureHTTPServer server = new SecureHTTPServer(portNumber);
 
     }
 
