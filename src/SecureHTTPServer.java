@@ -125,7 +125,7 @@ public class SecureHTTPServer {
             }
 
             System.out.println("We are out of the loop");
-            Header header = new Header(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
+            SSLHeader header = new Header(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
             try {
                 String strHeader = header.writeResponse();
                 byte[] bHeaderByte = strHeader.getBytes();
