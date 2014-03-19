@@ -178,7 +178,6 @@ public class Header {
                 }
             } else if (whichStatusCode() == 301) {
                 //redirect Location:
-                System.out.println(mRedirectMap.get(mFile));
                 msg.append(writeLocation(mRedirectMap.get(mFile)));
                 msg.append("\r\n");
                 mFileToSend = null;

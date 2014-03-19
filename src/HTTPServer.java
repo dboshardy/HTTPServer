@@ -111,14 +111,13 @@ public class HTTPServer {
                     output.write(bFileToSend, 0, bFileToSend.length);
                 }
                 output.flush();
+                output.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             try {
                 if (header.getConnectionType().equals("Keep-Alive")) {
-                    myClientSocket.setKeepAlive(true);
                 } else {
-                    myClientSocket.setKeepAlive(false);
                     myClientSocket.close();
                     System.out.println("Connection Closed!");
                     inputFromClient = "";

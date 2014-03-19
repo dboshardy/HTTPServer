@@ -178,15 +178,14 @@ public class SecureHTTPServer {
                     inputStream.read(bFileToSend);
                     output.write(bFileToSend, 0, bFileToSend.length);
                 }
-                System.out.println(header.toString());
                 output.flush();
+                output.close();
+                System.out.println("I FINISHED!");
             } catch (IOException e) {
                 e.printStackTrace();
             }
             if(header.getConnectionType().equals("Keep-Alive")){
-                myClientSocket.setKeepAlive(true);
             } else {
-                myClientSocket.setKeepAlive(false);
                 myClientSocket.close();
                 System.out.println("Connection Closed!");
                 mInputs.clear();
