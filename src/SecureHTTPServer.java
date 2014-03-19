@@ -92,6 +92,7 @@ public class SecureHTTPServer {
             SSLSocket myClientSocket = null;
             try {
                 myClientSocket = (SSLSocket) myHTTPServerSocket.accept();
+                System.out.println(myClientSocket.toString());
             } catch (IOException e) {
                 System.out.println("Could not connect client to server socket.");
                 e.printStackTrace();
@@ -118,13 +119,15 @@ public class SecureHTTPServer {
             //handle input from client socket
             String inputFromClient = "";
             try {
-                while (!((inputFromClient = input.readLine()) == null)) {
 
+                do {
+                    inputFromClient = input.readLine();
+                    System.out.println("INPUT: "+inputFromClient);
                     mInputs.add(inputFromClient);
                     mInputs.removeAll(Collections.singleton(null));
                     mInputs.removeAll(Collections.singleton(""));
-                    System.out.flush();
-                }
+                    if(inputFromClient.equals("")){ break;}
+                } while (inputFromClient != null);
 
 
             } catch (IOException e) {
@@ -151,12 +154,7 @@ public class SecureHTTPServer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            try {
-                myClientSocket.close();
-            } catch (IOException e) {
-                System.out.println("Error.");
-                e.printStackTrace();
-            }
+            myClientSocket.close();
         }
     }
 
