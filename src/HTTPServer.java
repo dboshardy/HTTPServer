@@ -29,13 +29,15 @@ public class HTTPServer {
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
     private File mFileToSend;
 
-    public HTTPServer(int portNum) throws IOException {
+    public void start(int portNum) throws IOException {
         URL url = getClass().getResource("www");
         File dir = new File(url.getPath());
         constructDirectory(dir, dir.getName());
         readRedirect();
         initializeServer(portNum);
+
     }
+
 
     private void initializeServer(int portNum) throws IOException {
         ServerSocket myHTTPServerSocket = null;
@@ -77,13 +79,16 @@ public class HTTPServer {
             }
 
             //handle input from client socket
-            String inputFromClient = null;
+            String inputFromClient = "";
             try {
                 do {
                     inputFromClient = input.readLine();
+                    System.out.println("INPUT: " + inputFromClient);
                     mInputs.add(inputFromClient);
                     mInputs.removeAll(Collections.singleton(null));
-                } while (!inputFromClient.equals(""));
+                    mInputs.removeAll(Collections.singleton(""));
+                    if(inputFromClient.equals("")){ break;}
+                } while (!(inputFromClient ==null));
 
 
             } catch (IOException e) {
@@ -95,6 +100,7 @@ public class HTTPServer {
             Header header = new Header(mInputs, mDirectory, mDirectoryMap, mRedirectMap);
             try {
                 String strHeader = header.writeResponse();
+                System.out.println(strHeader);
                 byte[] bHeaderByte = strHeader.getBytes();
                 output.write(bHeaderByte);
                 mFileToSend = header.getFileToSend();
@@ -103,14 +109,21 @@ public class HTTPServer {
                     FileInputStream inputStream = new FileInputStream(mFileToSend);
                     inputStream.read(bFileToSend);
                     output.write(bFileToSend, 0, bFileToSend.length);
+                    System.out.println("file sent: "+mFileToSend.getName());
                 }
                 output.flush();
-                mInputs.clear();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             try {
-                myClientSocket.close();
+                if (header.getConnectionType().equals("Keep-Alive")) {
+                    break;
+                } else {
+                    myClientSocket.close();
+                    System.out.println("Connection Closed!");
+                    inputFromClient = "";
+                    mInputs.clear();
+                }
             } catch (IOException e) {
                 System.out.println("Error.");
                 e.printStackTrace();
@@ -151,7 +164,8 @@ public class HTTPServer {
         //get port number
         int portNumber = getPortNumber(args[0]);
         try {
-            HTTPServer server = new HTTPServer(portNumber);
+            HTTPServer server = new HTTPServer();
+            server.start(portNumber);
         } catch (IOException e) {
             e.printStackTrace();
         }

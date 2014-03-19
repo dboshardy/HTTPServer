@@ -20,6 +20,7 @@ public class Header {
     private HashMap<String, File> mDirMap = new HashMap<String, File>();
     private ArrayList<File> mDirectory = new ArrayList<File>();
     private File mFileToSend;
+    private String mConnectionType;
 
     public Header(ArrayList<String> headers, ArrayList<File> directory, HashMap<String, File> dirmap, HashMap<String, String> redirmap) {
         mHeaders = headers;
@@ -29,6 +30,10 @@ public class Header {
         System.out.println(mDirMap);
         parseRequest();
     }
+    public String getConnectionType(){
+        return mConnectionType;
+    }
+
 
     public File getFileToSend() {
         return mFileToSend;
@@ -99,6 +104,14 @@ public class Header {
 
         mHost = mHeaders.get(2).replace("Host: ", "").trim();
         mURL = mHost + mFile;
+        for(String line : mHeaders){
+            if(line.contains("Connection:")){
+                mConnectionType = line.replace("Connection: ","").trim();
+            }
+        }
+        if(mConnectionType == null){
+            mConnectionType = "Close";
+        }
         parseRequestType(request);
     }
 
@@ -146,7 +159,11 @@ public class Header {
                 // Content Length
                 msg.append(writeContentLength());
                 // Connection Type
-                msg.append("Connection: close\r\n");
+                if(mConnectionType.equals("Keep-Alive")){
+                    msg.append("Connection: Keep-Alive\r\n");
+                } else {
+                    msg.append("Connection: close\r\n");
+                }
                 //Extra line break
                 msg.append("\r\n");
                 if(mRequestType.equals("HEAD")){

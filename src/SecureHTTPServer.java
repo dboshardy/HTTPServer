@@ -35,8 +35,10 @@ public class SecureHTTPServer {
     private ArrayList<File> mDirectory = new ArrayList<File>();
     private HashMap<String, File> mDirectoryMap = new HashMap<String, File>();
     private File mFileToSend;
+    private int mPortNum;
+    private static int portNumber;
 
-    public SecureHTTPServer(int portNum) {
+    public void start(int portNum){
         URL url = getClass().getResource("www");
         File dir = new File(url.getPath());
         constructDirectory(dir, dir.getName());
@@ -49,6 +51,34 @@ public class SecureHTTPServer {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+    }
+
+
+    public static class HTTPServerRunnable implements Runnable {
+        private static int portNum;
+        public HTTPServerRunnable(int portNum){
+            this.portNum = portNum;
+        }
+        public void run(){
+            HTTPServer httpserver = new HTTPServer();
+            try {
+                httpserver.start(portNum);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static class SecureHTTPServerRunnable implements Runnable {
+        private static int portNum;
+        public SecureHTTPServerRunnable(int portNum){
+            this.portNum = portNum;
+        }
+        public void run(){
+            SecureHTTPServer securehttpserver = new SecureHTTPServer();
+            securehttpserver.start(portNum);
+
         }
     }
 
@@ -150,11 +180,16 @@ public class SecureHTTPServer {
                 }
                 System.out.println(header.toString());
                 output.flush();
-                mInputs.clear();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            myClientSocket.close();
+            if(header.getConnectionType().equals("Keep-Alive")){
+            } else {
+                myClientSocket.close();
+                System.out.println("Connection Closed!");
+                mInputs.clear();
+                inputFromClient = "";
+            }
         }
     }
 
@@ -181,7 +216,7 @@ public class SecureHTTPServer {
         mDirectory.addAll(tempList);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         if (args.length != 1) {
             System.out.println("Invalid options.  Please specify the port number you wish to connect with using \'--port=####\'");
@@ -189,8 +224,17 @@ public class SecureHTTPServer {
 
         //get port number
         int portNumber = getPortNumber(args[0]);
-        SecureHTTPServer server = new SecureHTTPServer(portNumber);
+        /*
+        SecureHTTPServer secureHTTPServer = new SecureHTTPServer();
+        HTTPServer httpServer = new HTTPServer();
+        secureHTTPServer.start(portNumber);
+        httpServer.start(portNumber);
+        */
 
+        Thread rThread = new Thread(new HTTPServerRunnable(portNumber));
+        Thread sThread = new Thread(new SecureHTTPServerRunnable(portNumber+1));
+        rThread.start();
+        sThread.start();
     }
 
     //this parses the port number from the options entered
