@@ -184,7 +184,9 @@ public class SecureHTTPServer {
                 e.printStackTrace();
             }
             if(header.getConnectionType().equals("Keep-Alive")){
+                myClientSocket.setKeepAlive(true);
             } else {
+                myClientSocket.setKeepAlive(false);
                 myClientSocket.close();
                 System.out.println("Connection Closed!");
                 mInputs.clear();
@@ -224,7 +226,8 @@ public class SecureHTTPServer {
 
         //get port number
         int portNumber = getPortNumber(args[0]);
-        /*
+
+        /*  No longer needed, now we're cookin' with threads!
         SecureHTTPServer secureHTTPServer = new SecureHTTPServer();
         HTTPServer httpServer = new HTTPServer();
         secureHTTPServer.start(portNumber);

@@ -132,14 +132,15 @@ public class SSLHeader {
         if (mRequestType.equals("OTHER")) {
             return 403;
         } else if (hasFile()) {
-            //if file exists, return 200
-            return 200;
+            if(mFile.equals("/redirect.defs")){
+                return 404;
+            } else {
+                //if file exists, return 200
+                return 200;
+            }
         } else {
             //if file does not exist, check redirect
             if (mRedirectMap.containsKey(mFile)) {
-                if(mFile.equals("redirect.defs")){
-                    return 404;
-                }
                 return 301;
             } else {
                 return 404;

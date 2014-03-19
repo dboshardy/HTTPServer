@@ -109,7 +109,6 @@ public class HTTPServer {
                     FileInputStream inputStream = new FileInputStream(mFileToSend);
                     inputStream.read(bFileToSend);
                     output.write(bFileToSend, 0, bFileToSend.length);
-                    System.out.println("file sent: "+mFileToSend.getName());
                 }
                 output.flush();
             } catch (IOException e) {
@@ -117,8 +116,9 @@ public class HTTPServer {
             }
             try {
                 if (header.getConnectionType().equals("Keep-Alive")) {
-                    break;
+                    myClientSocket.setKeepAlive(true);
                 } else {
+                    myClientSocket.setKeepAlive(false);
                     myClientSocket.close();
                     System.out.println("Connection Closed!");
                     inputFromClient = "";

@@ -132,8 +132,12 @@ public class Header {
         if (mRequestType.equals("OTHER")) {
             return 403;
         } else if (hasFile()) {
+            if(mFile.equals("/redirect.defs")){
+                return 404;
+            } else {
             //if file exists, return 200
             return 200;
+            }
         } else {
             //if file does not exist, check redirect
             if (mRedirectMap.containsKey(mFile)) {
@@ -221,7 +225,7 @@ public class Header {
     }
 
     // writes the status code line based on a given status code
-    private String writeStatus() {
+    public String writeStatus() {
         if (whichStatusCode() == 200) {
             return "HTTP/1.0 200 OK\r\n";
         } else if (whichStatusCode() == 301) {
