@@ -30,7 +30,8 @@ public class Header {
         System.out.println(mDirMap);
         parseRequest();
     }
-    public String getConnectionType(){
+
+    public String getConnectionType() {
         return mConnectionType;
     }
 
@@ -104,12 +105,12 @@ public class Header {
 
         mHost = mHeaders.get(2).replace("Host: ", "").trim();
         mURL = mHost + mFile;
-        for(String line : mHeaders){
-            if(line.contains("Connection:")){
-                mConnectionType = line.replace("Connection: ","").trim();
+        for (String line : mHeaders) {
+            if (line.contains("Connection:")) {
+                mConnectionType = line.replace("Connection: ", "").trim();
             }
         }
-        if(mConnectionType == null){
+        if (mConnectionType == null) {
             mConnectionType = "Close";
         }
         parseRequestType(request);
@@ -132,11 +133,11 @@ public class Header {
         if (mRequestType.equals("OTHER")) {
             return 403;
         } else if (hasFile()) {
-            if(mFile.equals("/redirect.defs")){
+            if (mFile.equals("/redirect.defs")) {
                 return 404;
             } else {
-            //if file exists, return 200
-            return 200;
+                //if file exists, return 200
+                return 200;
             }
         } else {
             //if file does not exist, check redirect
@@ -163,17 +164,16 @@ public class Header {
                 // Content Length
                 msg.append(writeContentLength());
                 // Connection Type
-                if(mConnectionType.equals("Keep-Alive")){
+                if (mConnectionType.equals("Keep-Alive")) {
                     msg.append("Connection: Keep-Alive\r\n");
                 } else {
                     msg.append("Connection: close\r\n");
                 }
                 //Extra line break
                 msg.append("\r\n");
-                if(mRequestType.equals("HEAD")){
+                if (mRequestType.equals("HEAD")) {
                     mFileToSend = null;
-                }
-                else{
+                } else {
                     mFileToSend = mDirMap.get(mFile);
                 }
             } else if (whichStatusCode() == 301) {
@@ -195,8 +195,8 @@ public class Header {
 
 
     private String writeContentLength() {
-            File f = mDirMap.get(mFile);
-            return "Content-Length: " + f.length() + "\r\n";
+        File f = mDirMap.get(mFile);
+        return "Content-Length: " + f.length() + "\r\n";
     }
 
     private String writeContentType() {
@@ -225,23 +225,24 @@ public class Header {
 
     // writes the status code line based on a given status code
     public String writeStatus() {
-        if (whichStatusCode() == 200) {
-            return "HTTP/1.0 200 OK\r\n";
-        } else if (whichStatusCode() == 301) {
-            return "HTTP/1.0 301 Moved Permanently\r\n";
-        } else if (whichStatusCode() == 400) {
-            return "HTTP/1.0 400 Bad Request\r\n";
-        } else if (whichStatusCode() == 404) {
-            return "HTTP/1.0 404 Not Found\r\n";
-        } else if (whichStatusCode() == 403) {
-            return "HTTP/1.0 403 Forbidden\r\n";
-        } else if (whichStatusCode() == 501) {
-            return "HTTP/1.0 505 HTTP Version Not Supported\r\n";
-        } else {
-            return "HTTP/1.0 500 Error\r\n";
+        switch (whichStatusCode()) {
+            case (200):
+                return "HTTP/1.0 200 OK\r\n";
+            case (301):
+                return "HTTP/1.0 301 Moved Permanently\r\n";
+            case (400):
+                return "HTTP/1.0 400 Bad Request\r\n";
+            case (404):
+                return "HTTP/1.0 404 Not Found\r\n";
+            case (403):
+                return "HTTP/1.0 403 Forbidden\r\n";
+            case (501):
+                return "HTTP/1.0 505 HTTP Version Not Supported\r\n";
+            default:
+                return "HTTP/1.0 500 Error\r\n";
         }
     }
-
 }
+
 
 
